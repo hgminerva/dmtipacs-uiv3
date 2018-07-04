@@ -1,7 +1,7 @@
 // ====================
 // Angular and Material
 // ====================
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 // ======
@@ -14,6 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 // ====================
 import { ObservableArray, CollectionView } from 'wijmo/wijmo';
 import { UserService } from './user.service';
+import { WjFlexGrid } from 'wijmo/wijmo.angular2.grid';
 
 // =====
 // Model
@@ -41,6 +42,14 @@ export class UserComponent {
 
   public isBtnRefreshUserDataDisabled: Boolean = true;
 
+  public cboShowNumberOfRows: ObservableArray = new ObservableArray();
+  public usersNumberOfPageIndex: number;
+
+  // =====
+  // Wijmo
+  // =====
+  @ViewChild('userFlexGrid') userFlexGrid: WjFlexGrid;
+
   // ================
   // Initialize Model
   // ================
@@ -65,6 +74,49 @@ export class UserComponent {
     private router: Router,
   ) { }
 
+  // ================================
+  // Create Combo Show Number of Rows
+  // ================================
+  public createCboShowNumberOfRows(): void {
+    for (var i = 0; i <= 4; i++) {
+      var rows = 0;
+      var rowsString = "";
+
+      if (i == 0) {
+        rows = 15;
+        rowsString = "Show 15 Rows";
+      } else if (i == 1) {
+        rows = 50;
+        rowsString = "Show 50 Rows";
+      } else if (i == 2) {
+        rows = 100;
+        rowsString = "Show 100 Rows";
+      } else if (i == 3) {
+        rows = 150;
+        rowsString = "Show 150 Rows";
+      } else {
+        rows = 200;
+        rowsString = "Show 200 Rows";
+      }
+
+      this.cboShowNumberOfRows.push({
+        rowNumber: rows,
+        rowString: rowsString
+      });
+    }
+  }
+
+  // ===================================================
+  // Combo Show Number of Rows On Selected Index Changed
+  // ===================================================
+  public cboShowNumberOfRowsOnSelectedIndexChanged(selectedValue: any): void {
+    this.usersNumberOfPageIndex = selectedValue;
+
+    this.userCollectionView.pageSize = this.usersNumberOfPageIndex;
+    this.userCollectionView.refresh();
+    this.userFlexGrid.refresh();
+  }
+
   // =============
   // Get User Data
   // =============
@@ -83,7 +135,7 @@ export class UserComponent {
         if (data != null) {
           this.userData = data;
           this.userCollectionView = new CollectionView(this.userData);
-          this.userCollectionView.pageSize = 15;
+          this.userCollectionView.pageSize = this.usersNumberOfPageIndex;
           this.userCollectionView.trackChanges = true;
         }
 
@@ -105,6 +157,7 @@ export class UserComponent {
   // On Load Page
   // ============
   ngOnInit() {
+    this.createCboShowNumberOfRows();
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
     } else {

@@ -1,7 +1,7 @@
 // ====================
 // Angular and Material
 // ====================
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 
@@ -21,6 +21,7 @@ import { BodyPartsDeleteDialogComponent } from '../dialog/body-parts/body-parts-
 // ====================
 import { ObservableArray, CollectionView } from 'wijmo/wijmo';
 import { BodyPartsService } from './body-parts.service';
+import { WjFlexGrid } from 'wijmo/wijmo.angular2.grid';
 
 // =====
 // Model
@@ -47,6 +48,13 @@ export class BodyPartsComponent {
   public bodyPartsCollectionView: CollectionView = new CollectionView(this.bodyPartsData);
 
   public isBtnRefreshBodyPartsDataDisabled: Boolean = true;
+  public cboShowNumberOfRows: ObservableArray = new ObservableArray();
+  public bodyPartsNumberOfPageIndex: number;
+
+  // =====
+  // Wijmo
+  // =====
+  @ViewChild('bodyPartsFlexGrid') bodyPartsFlexGrid: WjFlexGrid;
 
   // ================
   // Initialize Model
@@ -66,6 +74,49 @@ export class BodyPartsComponent {
     private toastr: ToastrService
   ) { }
 
+  // ================================
+  // Create Combo Show Number of Rows
+  // ================================
+  public createCboShowNumberOfRows(): void {
+    for (var i = 0; i <= 4; i++) {
+      var rows = 0;
+      var rowsString = "";
+
+      if (i == 0) {
+        rows = 15;
+        rowsString = "Show 15 Rows";
+      } else if (i == 1) {
+        rows = 50;
+        rowsString = "Show 50 Rows";
+      } else if (i == 2) {
+        rows = 100;
+        rowsString = "Show 100 Rows";
+      } else if (i == 3) {
+        rows = 150;
+        rowsString = "Show 150 Rows";
+      } else {
+        rows = 200;
+        rowsString = "Show 200 Rows";
+      }
+
+      this.cboShowNumberOfRows.push({
+        rowNumber: rows,
+        rowString: rowsString
+      });
+    }
+  }
+
+  // ===================================================
+  // Combo Show Number of Rows On Selected Index Changed
+  // ===================================================
+  public cboShowNumberOfRowsOnSelectedIndexChanged(selectedValue: any): void {
+    this.bodyPartsNumberOfPageIndex = selectedValue;
+
+    this.bodyPartsCollectionView.pageSize = this.bodyPartsNumberOfPageIndex;
+    this.bodyPartsCollectionView.refresh();
+    this.bodyPartsFlexGrid.refresh();
+  }
+
   // ===================
   // Get Body Parts Data
   // ===================
@@ -84,10 +135,10 @@ export class BodyPartsComponent {
         if (data != null) {
           this.bodyPartsData = data;
           this.bodyPartsCollectionView = new CollectionView(this.bodyPartsData);
-          this.bodyPartsCollectionView.pageSize = 15;
+          this.bodyPartsCollectionView.pageSize = this.bodyPartsNumberOfPageIndex;
           this.bodyPartsCollectionView.trackChanges = true;
         }
-        
+
         this.isProgressBarHidden = true;
         this.isBtnRefreshBodyPartsDataDisabled = false;
       }
@@ -189,6 +240,7 @@ export class BodyPartsComponent {
   // On Load Page
   // ============
   ngOnInit() {
+    this.createCboShowNumberOfRows();
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
     } else {

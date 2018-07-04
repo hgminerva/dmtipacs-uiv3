@@ -11,9 +11,21 @@
         <table border="0" style="width: 100%;">
             <tr>
                 <td style="width: 95%;">
-                    <button class="btn btn-info" type="button" [disabled]="isBtnRefreshUserDataDisabled" (click)="getUserData()">
-                        <i class="fa fa-refresh"></i>
-                    </button>
+                    <div class="input-group">
+                        <button class="btn btn-info" type="button" [disabled]="isBtnRefreshUserDataDisabled" (click)="getUserData()">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                        &nbsp; &nbsp;
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <b>Show</b>
+                            </div>
+                        </div>
+                        <wj-combo-box #cboNumberOfRows [itemsSource]="cboShowNumberOfRows" [isEditable]="false" [isRequired]="true" [displayMemberPath]="'rowString'"
+                            [selectedValuePath]="'rowNumber'" (selectedIndexChanged)="cboShowNumberOfRowsOnSelectedIndexChanged(cboNumberOfRows.selectedValue)"
+                            style="width: 180px;">
+                        </wj-combo-box>
+                    </div>
                 </td>
                 <td style="width: 5%;" align="right">
                     <button mat-raised-button color="warn" routerLink="/software/dashboard">

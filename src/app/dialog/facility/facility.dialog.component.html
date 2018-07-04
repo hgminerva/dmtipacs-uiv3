@@ -3,7 +3,7 @@
     <mat-form-field class="input-100-percent" appearance="outline">
         <mat-label>Facility</mat-label>
         <mat-select matInput placeholder="Select Facility" [(ngModel)]='defaultSelectedFacilityId'>
-            <mat-option *ngFor="let cboFacility of cboFacilityObservableArray" [value]="cboFacility.Id">
+            <mat-option *ngFor="let cboFacility of cboFacilityObservableArray" [value]="cboFacility.UserId">
                 {{ cboFacility.UserFacility }}
             </mat-option>
         </mat-select>

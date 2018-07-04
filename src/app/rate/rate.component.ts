@@ -1,7 +1,7 @@
 // ====================
 // Angular and Material
 // ====================
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 
@@ -21,6 +21,7 @@ import { RateDeleteDialogComponent } from '../dialog/rate/rate-delete.dialog.com
 // ====================
 import { ObservableArray, CollectionView } from 'wijmo/wijmo';
 import { RateService } from './rate.service';
+import { WjFlexGrid } from 'wijmo/wijmo.angular2.grid';
 
 // =====
 // Model
@@ -48,6 +49,14 @@ export class RateComponent {
 
   public isBtnRefreshRateDataDisabled: Boolean = true;
 
+  public cboShowNumberOfRows: ObservableArray = new ObservableArray();
+  public ratesNumberOfPageIndex: number;
+
+  // =====
+  // Wijmo
+  // =====
+  @ViewChild('rateFlexGrid') rateFlexGrid: WjFlexGrid;
+
   // ================
   // Initialize Model
   // ================
@@ -72,6 +81,49 @@ export class RateComponent {
     private toastr: ToastrService
   ) { }
 
+  // ================================
+  // Create Combo Show Number of Rows
+  // ================================
+  public createCboShowNumberOfRows(): void {
+    for (var i = 0; i <= 4; i++) {
+      var rows = 0;
+      var rowsString = "";
+
+      if (i == 0) {
+        rows = 15;
+        rowsString = "Show 15 Rows";
+      } else if (i == 1) {
+        rows = 50;
+        rowsString = "Show 50 Rows";
+      } else if (i == 2) {
+        rows = 100;
+        rowsString = "Show 100 Rows";
+      } else if (i == 3) {
+        rows = 150;
+        rowsString = "Show 150 Rows";
+      } else {
+        rows = 200;
+        rowsString = "Show 200 Rows";
+      }
+
+      this.cboShowNumberOfRows.push({
+        rowNumber: rows,
+        rowString: rowsString
+      });
+    }
+  }
+
+  // ===================================================
+  // Combo Show Number of Rows On Selected Index Changed
+  // ===================================================
+  public cboShowNumberOfRowsOnSelectedIndexChanged(selectedValue: any): void {
+    this.ratesNumberOfPageIndex = selectedValue;
+
+    this.rateCollectionView.pageSize = this.ratesNumberOfPageIndex;
+    this.rateCollectionView.refresh();
+    this.rateFlexGrid.refresh();
+  }
+
   // =============
   // Get Rate Data
   // =============
@@ -90,7 +142,7 @@ export class RateComponent {
         if (data != null) {
           this.rateData = data;
           this.rateCollectionView = new CollectionView(this.rateData);
-          this.rateCollectionView.pageSize = 15;
+          this.rateCollectionView.pageSize = this.ratesNumberOfPageIndex;
           this.rateCollectionView.trackChanges = true;
         }
 
@@ -207,6 +259,7 @@ export class RateComponent {
   // On Load Page
   // ============
   ngOnInit() {
+    this.createCboShowNumberOfRows();
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
     } else {

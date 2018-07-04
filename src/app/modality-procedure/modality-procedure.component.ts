@@ -1,7 +1,7 @@
 // ====================
 // Angular and Material
 // ====================
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 
@@ -21,6 +21,7 @@ import { ModalityProcedureDeleteDialogComponent } from '../dialog/modality-proce
 // ====================
 import { ObservableArray, CollectionView } from 'wijmo/wijmo';
 import { ModalityProcedureService } from './modality-procedure.service';
+import { WjFlexGrid } from 'wijmo/wijmo.angular2.grid';
 
 // =====
 // Model
@@ -48,6 +49,9 @@ export class ModalityProcedureComponent {
 
   public isBtnRefreshModalityProcedureDataDisabled: Boolean = true;
 
+  public cboShowNumberOfRows: ObservableArray = new ObservableArray();
+  public modalityProcedureNumberOfPageIndex: number;
+
   // ================
   // Initialize Model
   // ================
@@ -60,6 +64,11 @@ export class ModalityProcedureComponent {
     DoctorId: null
   };
 
+  // =====
+  // Wijmo
+  // =====
+  @ViewChild('modalityProcedureFlexGrid') modalityProcedureFlexGrid: WjFlexGrid;
+
   // ===========
   // Constructor
   // ===========
@@ -69,6 +78,49 @@ export class ModalityProcedureComponent {
     private router: Router,
     private toastr: ToastrService
   ) { }
+
+  // ================================
+  // Create Combo Show Number of Rows
+  // ================================
+  public createCboShowNumberOfRows(): void {
+    for (var i = 0; i <= 4; i++) {
+      var rows = 0;
+      var rowsString = "";
+
+      if (i == 0) {
+        rows = 15;
+        rowsString = "Show 15 Rows";
+      } else if (i == 1) {
+        rows = 50;
+        rowsString = "Show 50 Rows";
+      } else if (i == 2) {
+        rows = 100;
+        rowsString = "Show 100 Rows";
+      } else if (i == 3) {
+        rows = 150;
+        rowsString = "Show 150 Rows";
+      } else {
+        rows = 200;
+        rowsString = "Show 200 Rows";
+      }
+
+      this.cboShowNumberOfRows.push({
+        rowNumber: rows,
+        rowString: rowsString
+      });
+    }
+  }
+
+  // ===================================================
+  // Combo Show Number of Rows On Selected Index Changed
+  // ===================================================
+  public cboShowNumberOfRowsOnSelectedIndexChanged(selectedValue: any): void {
+    this.modalityProcedureNumberOfPageIndex = selectedValue;
+
+    this.modalityProcedureCollectionView.pageSize = this.modalityProcedureNumberOfPageIndex;
+    this.modalityProcedureCollectionView.refresh();
+    this.modalityProcedureFlexGrid.refresh();
+  }
 
   // ===========================
   // Get Modality Procedure Data
@@ -88,7 +140,7 @@ export class ModalityProcedureComponent {
         if (data != null) {
           this.modalityProcedureData = data;
           this.modalityProcedureCollectionView = new CollectionView(this.modalityProcedureData);
-          this.modalityProcedureCollectionView.pageSize = 15;
+          this.modalityProcedureCollectionView.pageSize = this.modalityProcedureNumberOfPageIndex;
           this.modalityProcedureCollectionView.trackChanges = true;
         }
 
@@ -201,6 +253,7 @@ export class ModalityProcedureComponent {
   // On Load Page
   // ============
   ngOnInit() {
+    this.createCboShowNumberOfRows();
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
     } else {

@@ -33,7 +33,7 @@ import { AccountService } from '../../account/account.service';
 })
 export class FacilityDialogComponent {
   title = 'facility';
-  defaultSelectedFacilityId = 0;
+  public defaultSelectedFacilityId: number;
 
   // ==============================
   // Facility Async Task Properties
@@ -83,7 +83,11 @@ export class FacilityDialogComponent {
         }
 
         this.cboFacilityObservableArray = facilityObservableArray;
-        this.defaultSelectedFacilityId = this.cboFacilityObservableArray[0].Id;
+        if (localStorage.getItem("current_facility_id") != null && localStorage.getItem("current_facility") != null) {
+          this.defaultSelectedFacilityId = parseInt(localStorage.getItem("current_facility_id"));
+        } else {
+          this.defaultSelectedFacilityId = this.cboFacilityObservableArray[0].UserId;
+        }
       }
     );
   }
@@ -92,8 +96,8 @@ export class FacilityDialogComponent {
   // Update Current Facility
   // =======================
   public btnUpdateFacilityClick(): void {
-    let current_facility_id = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.Id === this.defaultSelectedFacilityId)[0].UserId;
-    let current_facility = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.Id === this.defaultSelectedFacilityId)[0].UserFacility;
+    let current_facility_id = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.UserId === this.defaultSelectedFacilityId)[0].UserId;
+    let current_facility = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.UserId === this.defaultSelectedFacilityId)[0].UserFacility;
 
     localStorage.setItem('current_facility_id', current_facility_id);
     localStorage.setItem('current_facility', current_facility);
