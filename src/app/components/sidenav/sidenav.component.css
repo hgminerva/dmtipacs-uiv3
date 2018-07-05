@@ -22,3 +22,13 @@
 .cbo-100 {
   width: 100%;
 }
+
+.sideNavMenuStyles:link, .sideNavMenuStyles:visited, .sideNavMenuStyles:hover, .sideNavMenuStyles:active  {
+  background: #f2f2f2;
+  /* color: #fff; */
+}
+
+.sideNavMenuStyles {
+  background: #f2f2f2;
+  /* color: #fff; */
+}

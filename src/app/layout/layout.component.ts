@@ -1,9 +1,11 @@
 // ==================
 // Angular and Layout
 // ==================
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
+
+import { MatSidenav } from '@angular/material';
 
 @Component({
   selector: 'app-layout',
@@ -16,6 +18,8 @@ export class LayoutComponent {
   // ================
   title = 'layout';
   mobileQuery: MediaQueryList;
+
+  @ViewChild('sidenav') sidenav: MatSidenav;
 
   private _mobileQueryListener: () => void;
 
@@ -32,12 +36,21 @@ export class LayoutComponent {
     this.mobileQuery.addListener(this._mobileQueryListener);
   }
 
+  // ========================
+  // Open Side Navigation Bar
+  // ========================
+  public openSideNav() {
+    this.sidenav.toggle();
+  }
+
   // ============
   // On Load Page
   // ============
   ngOnInit() {
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
+    } else {
+      this.openSideNav();
     }
   }
 

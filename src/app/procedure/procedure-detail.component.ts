@@ -240,7 +240,6 @@ export class ProcedureDetailComponent {
                     this.procedureCurrentUserSubscription = this.userService.userCurrentObservable.subscribe(
                         data => {
                             if (data != null) {
-                                console.log(data.UserTypeId);
                                 if (data.Id != this.procedureResultCollectionView.items[0].DoctorId) {
                                     this.isBtnAddProcedureResultDisabled = true;
                                     this.isBtnEditProcedureResultDisabled = true;
