@@ -27,6 +27,9 @@ import { ProcedureDetailComponent } from './procedure/procedure-detail.component
 import { ReportsComponent } from './reports/reports.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 
+
+import { AppAuthGuard } from './app-auth-guard';
+
 // ======
 // Routes
 // ======
@@ -40,13 +43,29 @@ const routes: Routes = [
             { path: '', component: DashboardComponent },
             { path: 'dashboard', component: DashboardComponent },
             { path: 'modality/procedure', component: ModalityProcedureComponent },
-            { path: 'body/parts', component: localStorage.getItem("current_user_type_id") == "3" ? BodyPartsComponent : ForbiddenComponent },
-            { path: 'user', component: localStorage.getItem("current_user_type_id") == "3" ? UserComponent : ForbiddenComponent },
-            { path: 'user/detail/:id', component: localStorage.getItem("current_user_type_id") == "3" ? UserDetailComponent : ForbiddenComponent },
+            {
+                path: 'body/parts', component: BodyPartsComponent,
+                canActivate: [
+                    AppAuthGuard
+                ],
+            },
+            {
+                path: 'user', component: UserComponent,
+                canActivate: [
+                    AppAuthGuard
+                ],
+            },
+            {
+                path: 'user/detail/:id', component: UserDetailComponent,
+                canActivate: [
+                    AppAuthGuard
+                ],
+            },
             { path: 'rate', component: RateComponent },
             { path: 'procedure', component: ProcedureComponent },
             { path: 'procedure/detail/:id', component: ProcedureDetailComponent },
-            { path: 'reports', component: ReportsComponent }
+            { path: 'reports', component: ReportsComponent },
+            { path: 'forbidden', component: ForbiddenComponent }
         ]
     }
 ];

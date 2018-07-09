@@ -52,14 +52,15 @@ import { AppRoutingModule } from './app-routing.module';
 // ==============
 // Custom Modules
 // ==============
-import { ComponentsModule } from './components/components.module'
-import { LayoutModule } from './layout/layout.module'
+import { ComponentsModule } from './components/components.module';
+import { LayoutModule } from './layout/layout.module';
 
 // ===============
 // Custom TS Files
 // ===============
-import { AppRouteReuseStrategy } from './app-route-reuse-strategy'
-import { AppSettings } from './app-settings'
+import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
+import { AppSettings } from './app-settings';
+import { AppAuthGuard } from './app-auth-guard';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { AppSettings } from './app-settings'
   providers: [
     AppSettings,
     AccountService,
-    { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy }
+    { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy },
+    AppAuthGuard
   ],
   bootstrap: [
     AppComponent
