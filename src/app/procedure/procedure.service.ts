@@ -34,6 +34,8 @@ export class ProcedureService {
     // ================
     // Async Properties 
     // ================
+    public facilitiesSource = new Subject<ObservableArray>();
+    public facilitiesObservable = this.facilitiesSource.asObservable();
     public procedureSource = new Subject<ObservableArray>();
     public procedureObservable = this.procedureSource.asObservable();
     public procedureDetailSource = new Subject<ProcedureModel>();
@@ -79,12 +81,41 @@ export class ProcedureService {
         private http: Http,
         private appSettings: AppSettings
     ) { }
+    
+    // =================
+    // Get Facility List
+    // =================
+    public getFacilities(): void {
+        let url = this.defaultAPIHostURL + "/api/facility/list";
+        let facilitiesObservableArray = new ObservableArray();
+
+        this.http.get(url, this.options).subscribe(
+            response => {
+                var results = new ObservableArray(response.json());
+                if (results.length > 0) {
+                    for (var i = 0; i <= results.length - 1; i++) {
+                        facilitiesObservableArray.push({
+                            Id: results[i].Id,
+                            UserId: results[i].UserId,
+                            UserFacility: results[i].UserFacility
+                        });
+                    }
+
+                    this.facilitiesSource.next(facilitiesObservableArray);
+                } else {
+                    this.facilitiesSource.next(null);
+                }
+            },
+            error => {
+                this.facilitiesSource.next(null);
+            }
+        );
+    }
 
     // =============
     // Get Procedure
     // =============
-    public getProcedure(startDate: string, endDate: string): void {
-        let facilityId: number = parseInt(localStorage.getItem("current_facility_id"));
+    public getProcedure(startDate: string, endDate: string, facilityId: number): void {
         let url = this.defaultAPIHostURL + "/api/procedure/list/byDateRange/" + startDate + "/" + endDate + "/" + facilityId;
         let procedureObservableArray = new ObservableArray();
 

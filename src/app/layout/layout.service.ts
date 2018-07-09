@@ -55,7 +55,8 @@ export class LayoutService {
                         facilitiesObservableArray.push({
                             Id: results[i].Id,
                             UserId: results[i].UserId,
-                            UserFacility: results[i].UserFacility
+                            UserFacility: results[i].UserFacility,
+                            UserTypeId: results[i].UserTypeId
                         });
                     }
 

@@ -96,8 +96,7 @@ export class AccountService {
         localStorage.removeItem('username');
         localStorage.removeItem('current_facility_id');
         localStorage.removeItem('current_facility');
-        localStorage.removeItem('current_user_type_Id');
-        localStorage.removeItem('current_user_Id');
+        localStorage.removeItem('current_user_type_id');
 
         setTimeout(() => {
             this.logoutSource.next(1);

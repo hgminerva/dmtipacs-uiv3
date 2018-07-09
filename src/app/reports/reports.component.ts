@@ -11,6 +11,7 @@ import { Angular5Csv } from 'angular5-csv/Angular5-csv';
 // =================================
 import { ObservableArray, CollectionView } from 'wijmo/wijmo';
 import { WjFlexGrid } from 'wijmo/wijmo.angular2.grid';
+import { WjComboBox } from 'wijmo/wijmo.angular2.input';
 import { ReportService } from './reports.service';
 
 // ======
@@ -36,6 +37,8 @@ export class ReportsComponent {
   // =====
   @ViewChild('procedureSummaryReportFlexGrid') procedureSummaryReportFlexGrid: WjFlexGrid;
   @ViewChild('procedureDetailReportFlexGrid') procedureDetailReportFlexGrid: WjFlexGrid;
+  @ViewChild('cboProcedureSummaryReportFacility') cboProcedureSummaryReportFacility: WjComboBox;
+  @ViewChild('cboProcedureDetailReportFacility') cboProcedureDetailReportFacility: WjComboBox;
 
   // ==============================================
   // Procedure Summary Report Async Task Properties
@@ -74,6 +77,9 @@ export class ReportsComponent {
   public isBtnRefreshProcedureSummaryReportDataDisabled: Boolean = true;
   public isBtnRefreshProcedureDetailReportDataDisabled: Boolean = true;
 
+  public facilitySubscription: any;
+  public cboFacilityObservableArray: ObservableArray = new ObservableArray();
+
   // ===========
   // Constructor
   // ===========
@@ -82,7 +88,6 @@ export class ReportsComponent {
     private router: Router,
     private toastr: ToastrService
   ) { }
-
 
   // =================================================
   // Text Change : Start Date Procedure Summary Report
@@ -114,6 +119,15 @@ export class ReportsComponent {
     }
   }
 
+  // ==================================================================
+  // Combo Box Procedure Summary Report Facility Selected Index Changed
+  // ==================================================================
+  public cboProcedureSummaryReportFacilitySelectedIndexChanged(): void {
+    if (this.cboProcedureSummaryReportFacility.selectedValue != null) {
+      this.getProcedureSummaryReportData();
+    }
+  }
+
   // ================================================
   // Text Change : Start Date Procedure Detail Report
   // ================================================
@@ -141,6 +155,15 @@ export class ReportsComponent {
       }
     } else {
       this.isProcedureDetailReportEndDateSelected = true;
+    }
+  }
+
+  // =================================================================
+  // Combo Box Procedure Detail Report Facility Selected Index Changed
+  // =================================================================
+  public cboProcedureDetailReportFacilitySelectedIndexChanged(): void {
+    if (this.cboProcedureDetailReportFacility.selectedValue != null) {
+      this.getProcedureDetailReportData();
     }
   }
 
@@ -181,6 +204,33 @@ export class ReportsComponent {
     }
   }
 
+  // =================
+  // Get Facility Data
+  // =================
+  public getFacilityData(): void {
+    this.reportService.getFacilities();
+    this.facilitySubscription = this.reportService.facilitiesObservable.subscribe(
+      data => {
+        let facilityObservableArray = new ObservableArray();
+
+        if (data != null) {
+          for (var i = 0; i <= data.length - 1; i++) {
+            facilityObservableArray.push({
+              Id: data[i].Id,
+              UserId: data[i].UserId,
+              UserFacility: data[i].UserFacility
+            });
+          }
+
+          this.cboFacilityObservableArray = facilityObservableArray;
+
+          this.getProcedureSummaryReportData();
+          this.getProcedureDetailReportData();
+        }
+      }
+    );
+  }
+
   // =================================
   // Get Procedure Summary Report Data
   // =================================
@@ -198,7 +248,12 @@ export class ReportsComponent {
     let dateStart = [this.procedureSummaryReportStartDateData.getFullYear(), this.procedureSummaryReportStartDateData.getMonth() + 1, this.procedureSummaryReportStartDateData.getDate()].join('-');
     let dateEnd = [this.procedureSummaryReportEndDateData.getFullYear(), this.procedureSummaryReportEndDateData.getMonth() + 1, this.procedureSummaryReportEndDateData.getDate()].join('-');
 
-    this.reportService.getProcedureSummaryReport(dateStart, dateEnd);
+    let facilityId = parseInt(localStorage.getItem("current_facility_id"));
+    if (this.cboProcedureSummaryReportFacility.selectedValue != null) {
+      facilityId = this.cboProcedureSummaryReportFacility.selectedValue;
+    }
+
+    this.reportService.getProcedureSummaryReport(dateStart, dateEnd, facilityId);
     this.procedureSummaryReportSubscription = this.reportService.procedureSummaryReportObservable.subscribe(
       data => {
         if (data != null) {
@@ -260,7 +315,12 @@ export class ReportsComponent {
     let dateStart = [this.procedureDetailReportStartDateData.getFullYear(), this.procedureDetailReportStartDateData.getMonth() + 1, this.procedureDetailReportStartDateData.getDate()].join('-');
     let dateEnd = [this.procedureDetailReportEndDateData.getFullYear(), this.procedureDetailReportEndDateData.getMonth() + 1, this.procedureDetailReportEndDateData.getDate()].join('-');
 
-    this.reportService.getProcedureDetailReport(dateStart, dateEnd);
+    let facilityId = parseInt(localStorage.getItem("current_facility_id"));
+    if (this.cboProcedureDetailReportFacility.selectedValue != null) {
+      facilityId = this.cboProcedureDetailReportFacility.selectedValue;
+    }
+
+    this.reportService.getProcedureDetailReport(dateStart, dateEnd, facilityId);
     this.procedureDetailReportSubscription = this.reportService.procedureDetailReportObservable.subscribe(
       data => {
         if (data != null) {
@@ -330,10 +390,7 @@ export class ReportsComponent {
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
     } else {
-      setTimeout(() => {
-        this.getProcedureSummaryReportData();
-        this.getProcedureDetailReportData();
-      }, 500);
+      this.getFacilityData();
     }
   }
 
@@ -341,6 +398,7 @@ export class ReportsComponent {
   // On Destory Page
   // ===============
   ngOnDestroy() {
+    if (this.facilitySubscription != null) this.facilitySubscription.unsubscribe();
     if (this.procedureSummaryReportSubscription != null) this.procedureSummaryReportSubscription.unsubscribe();
     if (this.procedureDetailReportSubscription != null) this.procedureDetailReportSubscription.unsubscribe();
   }

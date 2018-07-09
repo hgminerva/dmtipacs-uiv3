@@ -8,48 +8,74 @@
 </ol>
 <div class="card">
     <div class="card-header">
-        <div class="row">
-            <div class="col-md-9">
-                <div class="input-group">
+        <table border="0" style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 3%;">
                     <button class="btn btn-info" type="button" [disabled]="isBtnRefreshProcedureDataDisabled" (click)="getProcedureData()">
                         <i class="fa fa-refresh"></i>
                     </button>
-                    &nbsp; &nbsp;
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">
-                            <b>Start</b>
+                </td>
+                <td style="width: 18%;">
+                    <div class="input-group">
+                        &nbsp;
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <b>Start</b>
+                            </div>
                         </div>
+                        <wj-input-date #procedureStartDate [(ngModel)]="procedureStartDateData" [ngModelOptions]="{standalone: true}" (textChanged)="startDateTextChanged()"
+                            format="MM-dd-yyyy" class="form-control">
+                        </wj-input-date>
                     </div>
-                    <wj-input-date #procedureStartDate [(ngModel)]="procedureStartDateData" [ngModelOptions]="{standalone: true}" (textChanged)="startDateTextChanged()"
-                        format="MM-dd-yyyy" style="width: 150px;">
-                    </wj-input-date>
-                    &nbsp; &nbsp;
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">
-                            <b>End</b>
+                </td>
+                <td style="width: 18%;">
+                    <div class="input-group">
+                        &nbsp;
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <b>End</b>
+                            </div>
                         </div>
+                        <wj-input-date #procedureEndDate [(ngModel)]="procedureEndDateData" [ngModelOptions]="{standalone: true}" (textChanged)="endDateTextChanged()"
+                            format="MM-dd-yyyy" class="form-control">
+                        </wj-input-date>
                     </div>
-                    <wj-input-date #procedureEndDate [(ngModel)]="procedureEndDateData" [ngModelOptions]="{standalone: true}" (textChanged)="endDateTextChanged()"
-                        format="MM-dd-yyyy" style="width: 150px;">
-                    </wj-input-date>
-                    &nbsp; &nbsp;
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">
-                            <b>Show</b>
+                </td>
+                <td style="width: 23%;">
+                    <div class="input-group">
+                        &nbsp;
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <b>Facility</b>
+                            </div>
                         </div>
+                        <wj-combo-box #cboFacility [itemsSource]="cboFacilityObservableArray" [isEditable]="false" [isRequired]="true" [displayMemberPath]="'UserFacility'"
+                            [selectedValuePath]="'UserId'" [selectedValue]="currentfacilityId" (selectedIndexChanged)="cboFacilitySelectedIndexChanged()"
+                            class="form-control">
+                        </wj-combo-box>
                     </div>
-                    <wj-combo-box #cboProcedureNumberOfRows [itemsSource]="cboProcedureShowNumberOfRows" [isEditable]="false" [isRequired]="true"
-                        [displayMemberPath]="'rowString'" [selectedValuePath]="'rowNumber'" (selectedIndexChanged)="cboShowNumberOfRowsOnSelectedIndexChanged(cboProcedureNumberOfRows.selectedValue)"
-                        style="width: 180px;">
-                    </wj-combo-box>
-                </div>
-            </div>
-            <div class="col-md-3" align="right">
-                <button mat-raised-button color="warn" routerLink="/software/dashboard">
-                    <i class="fa fa-close"></i> Close
-                </button>
-            </div>
-        </div>
+                </td>
+                <td style="width: 18%;">
+                    <div class="input-group">
+                        &nbsp;
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <b>Show</b>
+                            </div>
+                        </div>
+                        <wj-combo-box #cboProcedureNumberOfRows [itemsSource]="cboProcedureShowNumberOfRows" [isEditable]="false" [isRequired]="true"
+                            [displayMemberPath]="'rowString'" [selectedValuePath]="'rowNumber'" (selectedIndexChanged)="cboShowNumberOfRowsOnSelectedIndexChanged(cboProcedureNumberOfRows.selectedValue)"
+                            class="form-control">
+                        </wj-combo-box>
+                    </div>
+                </td>
+                <td style="width: 20%;" align="right">
+                    <button mat-raised-button color="warn" routerLink="/software/dashboard">
+                        <i class="fa fa-close"></i> Close
+                    </button>
+                </td>
+            </tr>
+        </table>
     </div>
     <div class="card-body">
         <mat-progress-bar class="example-margin" [hidden]="isProgressBarHidden" [color]="'primary'" [mode]="'indeterminate'"></mat-progress-bar>

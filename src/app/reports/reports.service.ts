@@ -28,9 +28,10 @@ export class ReportService {
     // ================
     // Async Properties 
     // ================
+    public facilitiesSource = new Subject<ObservableArray>();
+    public facilitiesObservable = this.facilitiesSource.asObservable();
     public procedureSummaryReportSource = new Subject<ObservableArray>();
     public procedureSummaryReportObservable = this.procedureSummaryReportSource.asObservable();
-
     public procedureDetailReportSource = new Subject<ObservableArray>();
     public procedureDetailReportObservable = this.procedureDetailReportSource.asObservable();
 
@@ -43,11 +44,40 @@ export class ReportService {
         private appSettings: AppSettings
     ) { }
 
+    // =================
+    // Get Facility List
+    // =================
+    public getFacilities(): void {
+        let url = this.defaultAPIHostURL + "/api/facility/list";
+        let facilitiesObservableArray = new ObservableArray();
+
+        this.http.get(url, this.options).subscribe(
+            response => {
+                var results = new ObservableArray(response.json());
+                if (results.length > 0) {
+                    for (var i = 0; i <= results.length - 1; i++) {
+                        facilitiesObservableArray.push({
+                            Id: results[i].Id,
+                            UserId: results[i].UserId,
+                            UserFacility: results[i].UserFacility
+                        });
+                    }
+
+                    this.facilitiesSource.next(facilitiesObservableArray);
+                } else {
+                    this.facilitiesSource.next(null);
+                }
+            },
+            error => {
+                this.facilitiesSource.next(null);
+            }
+        );
+    }
+
     // ============================
     // Get Procedure Summary Report
     // ============================
-    public getProcedureSummaryReport(startDate: string, endDate: string): void {
-        let facilityId: number = parseInt(localStorage.getItem("current_facility_id"));
+    public getProcedureSummaryReport(startDate: string, endDate: string, facilityId: number): void {
         let url = this.defaultAPIHostURL + "/api/procedureSummaryReport/list/byDateRange/" + startDate + "/" + endDate + "/" + facilityId;
         let procedureSummaryReportObservableArray = new ObservableArray();
 
@@ -83,8 +113,8 @@ export class ReportService {
     // ===========================
     // Get Procedure Detail Report
     // ===========================
-    public getProcedureDetailReport(startDate: string, endDate: string): void {
-        let url = this.defaultAPIHostURL + "/api/procedureDetailReport/list/byDateRange/" + startDate + "/" + endDate + "/1";
+    public getProcedureDetailReport(startDate: string, endDate: string, facilityId: number): void {
+        let url = this.defaultAPIHostURL + "/api/procedureDetailReport/list/byDateRange/" + startDate + "/" + endDate + "/" + facilityId;
         let procedureDetailReportObservableArray = new ObservableArray();
 
         this.http.get(url, this.options).subscribe(

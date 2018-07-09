@@ -25,6 +25,7 @@ import { RateComponent } from './rate/rate.component';
 import { ProcedureComponent } from './procedure/procedure.component';
 import { ProcedureDetailComponent } from './procedure/procedure-detail.component';
 import { ReportsComponent } from './reports/reports.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
 
 // ======
 // Routes
@@ -39,9 +40,9 @@ const routes: Routes = [
             { path: '', component: DashboardComponent },
             { path: 'dashboard', component: DashboardComponent },
             { path: 'modality/procedure', component: ModalityProcedureComponent },
-            { path: 'body/parts', component: BodyPartsComponent },
-            { path: 'user', component: UserComponent },
-            { path: 'user/detail/:id', component: UserDetailComponent },
+            { path: 'body/parts', component: localStorage.getItem("current_user_type_id") == "3" ? BodyPartsComponent : ForbiddenComponent },
+            { path: 'user', component: localStorage.getItem("current_user_type_id") == "3" ? UserComponent : ForbiddenComponent },
+            { path: 'user/detail/:id', component: localStorage.getItem("current_user_type_id") == "3" ? UserDetailComponent : ForbiddenComponent },
             { path: 'rate', component: RateComponent },
             { path: 'procedure', component: ProcedureComponent },
             { path: 'procedure/detail/:id', component: ProcedureDetailComponent },

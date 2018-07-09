@@ -53,6 +53,7 @@ import { ProcedureResultDetailDialogComponent } from '../dialog/procedure/proced
 import { ProcedureResultDeleteDialogComponent } from '../dialog/procedure/procedure-result-delete.dialog.component';
 import { ProcedureResultPDFDetailPDFDialogComponent } from '../dialog/procedure/procedure-result-detail-pdf.dialog.component';
 import { ReportsComponent } from '../reports/reports.component';
+import { ForbiddenComponent } from '../forbidden/forbidden.component';
 
 // ========
 // Services
@@ -74,7 +75,8 @@ import { ProcedureService } from '../procedure/procedure.service';
         UserComponent, UserDetailComponent, UserDoctorDetailDialogComponent, UserDoctorDeleteDialogComponent,
         RateComponent, RateDetailDialogComponent, RateDeleteDialogComponent,
         ProcedureComponent, ProcedureDetailComponent, ProcedureDeleteDialogComponent, ProcedureResultDetailDialogComponent, ProcedureResultDeleteDialogComponent, ProcedureResultPDFDetailPDFDialogComponent,
-        ReportsComponent
+        ReportsComponent,
+        ForbiddenComponent
     ],
     imports: [
         CommonModule,

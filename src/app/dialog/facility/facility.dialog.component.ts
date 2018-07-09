@@ -77,7 +77,8 @@ export class FacilityDialogComponent {
             facilityObservableArray.push({
               Id: data[i].Id,
               UserId: data[i].UserId,
-              UserFacility: data[i].UserFacility
+              UserFacility: data[i].UserFacility,
+              UserTypeId: data[i].UserTypeId
             });
           }
         }
@@ -98,9 +99,11 @@ export class FacilityDialogComponent {
   public btnUpdateFacilityClick(): void {
     let current_facility_id = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.UserId === this.defaultSelectedFacilityId)[0].UserId;
     let current_facility = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.UserId === this.defaultSelectedFacilityId)[0].UserFacility;
+    let current_user_type_id = this.cboFacilityObservableArray.filter(cboFacility => cboFacility.UserId === this.defaultSelectedFacilityId)[0].UserTypeId;
 
     localStorage.setItem('current_facility_id', current_facility_id);
     localStorage.setItem('current_facility', current_facility);
+    localStorage.setItem('current_user_type_id', current_user_type_id);
 
     this.detailFacilityDialogRef.close(current_facility);
     if (this.facilitySubscription != null) this.facilitySubscription.unsubscribe();

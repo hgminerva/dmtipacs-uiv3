@@ -20,6 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 // ====================
 import { ObservableArray, CollectionView } from 'wijmo/wijmo';
 import { WjFlexGrid } from 'wijmo/wijmo.angular2.grid';
+import { WjComboBox } from 'wijmo/wijmo.angular2.input';
 import { ProcedureService } from './procedure.service';
 
 // =====
@@ -46,6 +47,9 @@ export class ProcedureComponent {
   public procedureData: ObservableArray = new ObservableArray();
   public procedureCollectionView: CollectionView = new CollectionView(this.procedureData);
 
+  public facilitySubscription: any;
+  public cboFacilityObservableArray: ObservableArray = new ObservableArray();
+
   // ===========================
   // Date Range Filters (Values)
   // ===========================
@@ -65,6 +69,7 @@ export class ProcedureComponent {
   // Wijmo
   // =====
   @ViewChild('procedureFlexGrid') procedureFlexGrid: WjFlexGrid;
+  @ViewChild('cboFacility') cboFacility: WjComboBox;
 
   // ================
   // Initialize Model
@@ -177,6 +182,40 @@ export class ProcedureComponent {
     }
   }
 
+  // =================
+  // Get Facility Data
+  // =================
+  public getFacilityData(): void {
+    this.procedureService.getFacilities();
+    this.facilitySubscription = this.procedureService.facilitiesObservable.subscribe(
+      data => {
+        let facilityObservableArray = new ObservableArray();
+
+        if (data != null) {
+          for (var i = 0; i <= data.length - 1; i++) {
+            facilityObservableArray.push({
+              Id: data[i].Id,
+              UserId: data[i].UserId,
+              UserFacility: data[i].UserFacility
+            });
+          }
+        }
+
+        this.cboFacilityObservableArray = facilityObservableArray;
+        this.getProcedureData();
+      }
+    );
+  }
+
+  // =========================================
+  // Combo Box Facility Selected Index Changed
+  // =========================================
+  public cboFacilitySelectedIndexChanged() {
+    if (this.cboFacility.selectedValue != null) {
+      this.getProcedureData();
+    }
+  }
+
   // ==================
   // Get Procedure Data
   // ==================
@@ -192,7 +231,12 @@ export class ProcedureComponent {
     let dateStart = [this.procedureStartDateData.getFullYear(), this.procedureStartDateData.getMonth() + 1, this.procedureStartDateData.getDate()].join('-');
     let dateEnd = [this.procedureEndDateData.getFullYear(), this.procedureEndDateData.getMonth() + 1, this.procedureEndDateData.getDate()].join('-');
 
-    this.procedureService.getProcedure(dateStart, dateEnd);
+    let facilityId = parseInt(localStorage.getItem("current_facility_id"));
+    if (this.cboFacility.selectedValue != null) {
+      facilityId = this.cboFacility.selectedValue;
+    }
+
+    this.procedureService.getProcedure(dateStart, dateEnd, facilityId);
     this.procedureSubscription = this.procedureService.procedureObservable.subscribe(
       data => {
         if (data != null) {
@@ -254,7 +298,7 @@ export class ProcedureComponent {
     if (localStorage.getItem("access_token") == null) {
       this.router.navigate(['/account/login']);
     } else {
-      this.getProcedureData();
+      this.getFacilityData();
     }
   }
 
@@ -262,6 +306,7 @@ export class ProcedureComponent {
   // On Destory Page
   // ===============
   ngOnDestroy() {
+    if (this.facilitySubscription != null) this.facilitySubscription.unsubscribe();
     if (this.procedureSubscription != null) this.procedureSubscription.unsubscribe();
   }
 }
