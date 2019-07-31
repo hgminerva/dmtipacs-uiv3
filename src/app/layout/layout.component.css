@@ -9,9 +9,9 @@
 }
 
 .example-toolbar {
-  background: blue;
   padding: 10px;
   box-shadow: 7px 7px 7px 7px #000;
+  border-bottom: 1.5px solid rgb(223, 223, 223);
 }
 
 .example-is-mobile .example-toolbar {
