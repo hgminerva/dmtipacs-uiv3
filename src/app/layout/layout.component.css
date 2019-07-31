@@ -8,10 +8,14 @@
   right: 0;
 }
 
+.example-toolbar {
+  background: blue;
+  padding: 10px;
+  box-shadow: 7px 7px 7px 7px #000;
+}
+
 .example-is-mobile .example-toolbar {
-  box-shadow: 5px 10spx #888888;
   position: fixed;
-  z-index: 2;
 }
 
 .example-sidenav-container {
